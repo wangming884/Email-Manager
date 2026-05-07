@@ -1,0 +1,5 @@
+D:\Email Manager\backend\src\test\java\com\mailmanager\integration\MailSyncIntegrationTest.java
+D:\Email Manager\backend\src\test\java\com\mailmanager\service\AccountStatusMachineTest.java
+D:\Email Manager\backend\src\test\java\com\mailmanager\service\MailParserServiceTest.java
+D:\Email Manager\backend\src\test\java\com\mailmanager\service\SecretCryptoServiceTest.java
+D:\Email Manager\backend\src\test\java\com\mailmanager\service\WebhookServiceTest.java

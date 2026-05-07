@@ -1,0 +1,5 @@
+com\mailmanager\integration\MailSyncIntegrationTest.class
+com\mailmanager\service\MailParserServiceTest.class
+com\mailmanager\service\SecretCryptoServiceTest.class
+com\mailmanager\service\AccountStatusMachineTest.class
+com\mailmanager\service\WebhookServiceTest.class

@@ -1,0 +1,86 @@
+spring:
+  application:
+    name: mail-manager
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/mail_manager?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
+    username: ${DB_USERNAME:mail_manager}
+    password: ${DB_PASSWORD:mail_manager}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+          max-wait: 2000ms
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  mail:
+    properties:
+      mail:
+        store:
+          protocol: imap
+        imap:
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+        smtp:
+          connectiontimeout: 5000
+          timeout: 5000
+server:
+  port: ${SERVER_PORT:8080}
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  security:
+    admin-username: ${ADMIN_USERNAME:admin}
+    admin-password: ${ADMIN_PASSWORD:admin123456}
+    encryption-secret: ${ENCRYPTION_SECRET:0123456789abcdef0123456789abcdef}
+    jwt-secret: ${JWT_SECRET:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+    admin-token-ttl-minutes: 720
+    client-token-ttl-minutes: 120
+  bootstrap:
+    enabled: ${BOOTSTRAP_ENABLED:true}
+    default-client-id: ${DEFAULT_CLIENT_ID:core-platform}
+    default-client-secret: ${DEFAULT_CLIENT_SECRET:core-platform-secret}
+  sync:
+    provider-concurrency: 2
+    jitter-min-millis: 200
+    jitter-max-millis: 800
+    fetch-limit: 30
+  webhook:
+    timeout-seconds: 5
+    retry-count: 3

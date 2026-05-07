@@ -30,7 +30,22 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/ws/events/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/admin/login", "/api/v1/auth/token").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/", "/index.html", "/assets/**").permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/",
+                                "/login",
+                                "/accounts",
+                                "/accounts/*",
+                                "/import-jobs",
+                                "/emails",
+                                "/clients",
+                                "/rules",
+                                "/webhooks",
+                                "/audit-logs",
+                                "/index.html",
+                                "/assets/**",
+                                "/favicon.ico"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
