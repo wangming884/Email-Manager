@@ -1,0 +1,70 @@
+services:
+  mysql:
+    image: ${MYSQL_IMAGE:-mysql:8.4}
+    container_name: ${MYSQL_CONTAINER_NAME:-mail-manager-mysql}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mail_manager}
+      MYSQL_USER: ${MYSQL_USER:-mail_manager}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-mail_manager}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_PASSWORD:-mail_manager}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: ${REDIS_IMAGE:-redis:7.4-alpine}
+    container_name: ${REDIS_CONTAINER_NAME:-mail-manager-redis}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ../backend
+    container_name: ${BACKEND_CONTAINER_NAME:-mail-manager-backend}
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-mail_manager}?useUnicode=true&characterEncoding=utf8&serverTimezone=${APP_TIMEZONE:-Asia/Shanghai}
+      DB_USERNAME: ${MYSQL_USER:-mail_manager}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-mail_manager}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123456}
+      DEFAULT_CLIENT_ID: ${DEFAULT_CLIENT_ID:-core-platform}
+      DEFAULT_CLIENT_SECRET: ${DEFAULT_CLIENT_SECRET:-core-platform-secret}
+      BOOTSTRAP_ENABLED: ${BOOTSTRAP_ENABLED:-true}
+      SERVER_PORT: 8080
+      JWT_SECRET: ${JWT_SECRET:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      ENCRYPTION_SECRET: ${ENCRYPTION_SECRET:-0123456789abcdef0123456789abcdef}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ../frontend
+    container_name: ${FRONTEND_CONTAINER_NAME:-mail-manager-frontend}
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
+  redis-data:
